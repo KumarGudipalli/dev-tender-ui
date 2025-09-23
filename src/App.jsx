@@ -1,6 +1,6 @@
 import Home from "./components/home/home";
 import Login from "./components/login/Login";
-import { Routes, Route, BrowserRouter } from "react-router-dom";
+import { Routes, Route, BrowserRouter, Navigate } from "react-router-dom";
 import Profile from "./components/profile";
 import Body from "./body";
 import Connection from "./components/connections";
@@ -12,7 +12,9 @@ function App() {
     <BrowserRouter>
       {/* ✅ inside Router */}
       <Routes>
+        <Route path="/" element={<Navigate to="/login" replace />} />
         <Route path="/login" element={<Login />} />
+
         <Route path="/signup" element={<Signup />} />
 
         {/* ✅ Protected wrapper */}
