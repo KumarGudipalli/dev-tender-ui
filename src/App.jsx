@@ -1,6 +1,6 @@
 import Home from "./components/Home/home";
 import Login from "./components/login/Login";
-import { Routes, Route, useNavigate, BrowserRouter } from "react-router-dom";
+import { Routes, Route, BrowserRouter } from "react-router-dom";
 import Profile from "./components/profile";
 import Body from "./body";
 import Connection from "./components/connections";
