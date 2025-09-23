@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import UserCard from "../Home/userCard";
+import UserCard from "../home/userCard";
 import isEqual from "lodash/isEqual";
 import { BaseURL } from "../../utils/constant";
 import { addUsersFeed } from "../../Redux/slices/feedSlices";
