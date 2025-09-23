@@ -1,4 +1,4 @@
-import Home from "./components/Home/home";
+import Home from "./components/home/home";
 import Login from "./components/login/Login";
 import { Routes, Route, BrowserRouter } from "react-router-dom";
 import Profile from "./components/profile";
