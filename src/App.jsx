@@ -4,7 +4,7 @@ import { Routes, Route, BrowserRouter } from "react-router-dom";
 import Profile from "./components/profile";
 import Body from "./body";
 import Connection from "./components/connections";
-import Requests from "./components/Requests";
+import Requests from "./components/requests";
 import Signup from "./components/signup";
 
 function App() {
