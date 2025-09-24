@@ -56,7 +56,7 @@ function Profile() {
 
       if (Object.keys(updatedFields).length > 0) {
         // console.log("Updated fields:", updatedFields);
-        const response = await fetch(`${BaseURL}api/profile/edit`, {
+        const response = await fetch(`${BaseURL}/profile/edit`, {
           method: "PATCH",
           credentials: "include", // allows sending cookies
           headers: {

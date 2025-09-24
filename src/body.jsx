@@ -12,7 +12,7 @@ function Body() {
   useEffect(() => {
     const fetchProfile = async () => {
       try {
-        const response = await fetch(`${BaseURL}api/profile/view`, {
+        const response = await fetch(`${BaseURL}profile/view`, {
           method: "GET",
           credentials: "include",
           headers: {
