@@ -24,7 +24,7 @@ function Login() {
         password,
       };
 
-      const response = await fetch(`${BaseURL}api/auth/login`, {
+      const response = await fetch(`${BaseURL}/auth/login`, {
         method: "POST",
         credentials: "include", // allows sending cookies
         headers: {
