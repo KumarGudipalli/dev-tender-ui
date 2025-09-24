@@ -27,7 +27,7 @@ function Signup() {
         password,
       };
 
-      const response = await fetch(`${BaseURL}api/auth/signup`, {
+      const response = await fetch(`${BaseURL}/auth/signup`, {
         method: "POST",
         credentials: "include", // allows sending cookies
         headers: {
