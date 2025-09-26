@@ -3,10 +3,11 @@ import { BaseURL } from "../../utils/constant";
 import { useDispatch, useSelector } from "react-redux";
 import { addConnections } from "../../Redux/slices/connectionSlice";
 import EmptySpace from "../../utils/emptySpace";
-
+import { useNavigate } from "react-router-dom";
 const Connection = () => {
   const dispatch = useDispatch();
   const connections = useSelector((store) => store.connections);
+  const navigate = useNavigate();
   const fetchConnections = async () => {
     try {
       const response = await fetch(BaseURL + "request/allConnections", {
@@ -17,14 +18,14 @@ const Connection = () => {
         },
       });
       const data = await response.json();
-      dispatch(addConnections(data.userAllConnections));
+      dispatch(addConnections(data.connections));
       //   console.log(data.userAllConnections);
     } catch (error) {}
   };
   useEffect(() => {
     fetchConnections();
   }, []);
-
+  console.log(connections, "connections");
   if (!connections) return;
   if (connections.length == 0)
     return (
@@ -33,30 +34,37 @@ const Connection = () => {
         desc="Try connecting with more people to see updates here."
       />
     );
-  console.log(connections);
   return (
     <div className=" text-center  my-2 ">
       <div className="text-3xl font-bold">Connections</div>
       <div className="flex flex-col my-3 items-center">
         {connections &&
           connections.map((item) => (
-            <div
-              key={item._id}
-              className="flex gap-4 w-1/2 my-2 p-4 items-center justify-start bg-base-200 shadow-xl"
-            >
-              <div className="w-14 h-14">
-                <img
-                  className="w-full h-full rounded-full object-cover"
-                  src={item.senderId?.profileUrl}
-                />
-              </div>
+            <div className=" justify-between flex gap-4 w-1/2 my-2 p-4 items-center  bg-base-200 shadow-xl">
+              <div
+                key={item._id}
+                className="flex gap-4 w-3/4 my-2 p-4 items-center justify-start "
+              >
+                <div className="w-14 h-14">
+                  <img
+                    className="w-full h-full rounded-full object-cover"
+                    src={item?.profileUrl}
+                  />
+                </div>
 
-              <div className="text-left">
-                <p>
-                  {item?.senderId?.firstName} {item?.senderId?.lastName}
-                </p>
-                <p>{item?.senderId?.about}</p>
+                <div className="text-left">
+                  <p>
+                    {item?.firstName} {item?.lastName}
+                  </p>
+                  <p>{item?.about}</p>
+                </div>
               </div>
+              <button
+                onClick={() => navigate(`/chat/${item?._id}`)}
+                className="btn btn-soft btn-primary w-[105px] font-bold"
+              >
+                chat
+              </button>
             </div>
           ))}
       </div>

@@ -58,7 +58,10 @@ const Connection = () => {
       <div className="flex flex-col my-3 items-center">
         {requests &&
           requests.map((item) => (
-            <div className="flex w-1/2 mx-2 my-2 bg-base-200 shadow-xl items-center justify-between">
+            <div
+              key={item._id}
+              className="flex w-1/2 mx-2 my-2 bg-base-200 shadow-xl items-center justify-between"
+            >
               <div
                 key={item._id}
                 className="flex gap-4 my-2 p-4 items-center justify-start "
