@@ -5,13 +5,23 @@ import { SocketRequestConnection } from "../../socket";
 import { BaseURL } from "../../utils/constant";
 
 function Chat() {
+  const connections = useSelector((store) => store.connections);
   const user = useSelector((store) => store.login);
   const userId = user?._id;
   const { targetId } = useParams();
   const [chatContent, setChatContent] = useState([]);
+  const [file, setFile] = useState(null);
   const [message, setMessage] = useState("");
-
+  const [preview, setPreview] = useState(null);
+  const [currentUser, setCurrentUser] = useState(null);
   const messagesEndRef = useRef(null);
+
+  const handleFileChange = (e) => {
+    const selected = e.target.files[0];
+    setFile(selected);
+    setPreview(URL.createObjectURL(selected)); // show preview
+    console.log(selected);
+  };
 
   useEffect(() => {
     getChatList();
@@ -31,10 +41,27 @@ function Chat() {
     // scroll to bottom when new message arrives
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [chatContent]);
-
-  const handleSendMessage = () => {
+  console.log("imageUrl", currentUser);
+  const handleSendMessage = async () => {
     const socket = SocketRequestConnection();
-    if (!message.trim()) return;
+    if (!message.trim() && !file) return;
+
+    let imageUrl = null;
+    if (file) {
+      const formData = new FormData();
+      formData.append("image", file);
+      console.log(formData);
+      const res = await fetch(BaseURL + "files/upload", {
+        method: "POST",
+        credentials: "include",
+        body: formData,
+      });
+      const data = await res.json();
+      imageUrl = data.fileUrl;
+
+      setFile(null);
+      setPreview(null);
+    }
 
     socket.emit("sendMessage", {
       firstName: user.firstName,
@@ -42,6 +69,7 @@ function Chat() {
       targetId,
       userId,
       text: message,
+      img: imageUrl,
     });
     setMessage("");
     // getChatList();
@@ -54,13 +82,15 @@ function Chat() {
         credentials: "include",
       });
       const data = await response.json();
-
+      console.log("img", data);
       const list = data?.messages?.map((chat) => ({
         firstName: chat.senderId.firstName,
         lastName: chat.senderId.lastName,
         text: chat.content,
+        imageUrl: chat.imageUrl,
       }));
-
+      const user = data?.participants.filter((item) => item._id == targetId);
+      setCurrentUser(user[0]);
       setChatContent(list || []);
     } catch (error) {
       console.log(error, "error");
@@ -70,9 +100,11 @@ function Chat() {
   return (
     <div className="flex flex-col border border-gray-500 w-1/2 h-[80vh] m-auto my-4">
       {/* header */}
-      <div className="border-b border-b-gray-500 h-10 w-full p-2 flex items-center">
-        {user.firstName}
-      </div>
+      {currentUser != null && (
+        <div className="border-b border-gray-500 h-10 w-full p-2 flex items-center">
+          {currentUser?.firstName + " " + currentUser?.lastName}
+        </div>
+      )}
 
       {/* messages */}
       <div className="flex-1 overflow-y-auto p-3 space-y-3">
@@ -81,34 +113,21 @@ function Chat() {
             <div
               key={index}
               className={`chat ${
-                user?.firstName !== item?.firstName &&
-                user?.lastName !== item?.lastName
-                  ? "chat-start"
-                  : "chat-end"
+                user?.firstName !== item?.firstName ? "chat-start" : "chat-end"
               }`}
             >
-              <div className="chat-image avatar">
-                <div className="w-10 rounded-full">
-                  <img
-                    alt="profile"
-                    src="https://img.daisyui.com/images/profile/demo/kenobee@192.webp"
-                  />
+              {(item.text || item.imageUrl != null) && (
+                <div className="chat-bubble max-w-72">
+                  {item.text && <p>{item.text}</p>}
+                  {item.imageUrl && item.imageUrl != null && (
+                    <img
+                      src={item.imageUrl}
+                      alt="chat-img"
+                      className="max-w-[200px] rounded mt-1"
+                    />
+                  )}
                 </div>
-              </div>
-              <div className="chat-header">
-                {item.firstName} {item.lastName}
-              </div>
-              <div
-                className={`chat-bubble ${
-                  user?.firstName !== item?.firstName &&
-                  user?.lastName !== item?.lastName
-                    ? "chat-bubble-secondary"
-                    : "chat-bubble-primary"
-                } max-w-72`}
-              >
-                {item.text}
-              </div>
-              <div className="chat-footer opacity-50">Seen</div>
+              )}
             </div>
           ))
         ) : (
@@ -126,6 +145,25 @@ function Chat() {
           className="outline-none border bg-gray-900 w-3/4 p-1 rounded"
           placeholder="Type your message..."
         />
+
+        {preview && (
+          <img
+            src={preview}
+            alt="preview"
+            className="w-16 h-16 object-cover rounded"
+          />
+        )}
+
+        <input
+          type="file"
+          onChange={(e) => handleFileChange(e)}
+          className="hidden"
+          id="imageUpload"
+        />
+        <label htmlFor="imageUpload" className="cursor-pointer text-2xl">
+          🖼️
+        </label>
+
         <button
           onClick={handleSendMessage}
           className="btn btn-soft btn-info px-4"
