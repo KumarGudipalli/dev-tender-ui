@@ -5,7 +5,7 @@ import { SocketRequestConnection } from "../../socket";
 import { BaseURL } from "../../utils/constant";
 
 function Chat() {
-  const connections = useSelector((store) => store.connections);
+
   const user = useSelector((store) => store.login);
   const userId = user?._id;
   const { targetId } = useParams();
